@@ -1,8 +1,8 @@
 // Copyright 2022 NNTU-CS
-#include "tree.h"
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include "tree.h"
 
 PMTree::PMTree(const std::vector<char>& elements) {
     if (elements.empty()) {
@@ -10,14 +10,14 @@ PMTree::PMTree(const std::vector<char>& elements) {
         total_permutations_ = 0;
         return;
     }
-    
+
     root_ = std::make_shared<Node>('\0');
     total_permutations_ = 1;
-    
+
     for (size_t i = 1; i <= elements.size(); ++i) {
         total_permutations_ *= i;
     }
-    
+
     buildTree(root_, elements);
 }
 
@@ -26,18 +26,18 @@ void PMTree::buildTree(std::shared_ptr<Node> parent,
     if (remaining_elements.empty()) {
         return;
     }
-    
+
     for (char elem : remaining_elements) {
         auto child = std::make_shared<Node>(elem);
         parent->children.push_back(child);
-        
+
         std::vector<char> new_remaining;
         for (char e : remaining_elements) {
             if (e != elem) {
                 new_remaining.push_back(e);
             }
         }
-        
+
         buildTree(child, new_remaining);
     }
 }
@@ -48,7 +48,7 @@ void collectPermutations(std::shared_ptr<PMTree::Node> node,
     if (node->value != '\0') {
         current.push_back(node->value);
     }
-    
+
     if (node->children.empty()) {
         result.push_back(current);
     } else {
@@ -56,7 +56,7 @@ void collectPermutations(std::shared_ptr<PMTree::Node> node,
             collectPermutations(child, current, result);
         }
     }
-    
+
     if (node->value != '\0') {
         current.pop_back();
     }
@@ -67,7 +67,7 @@ std::vector<std::vector<char>> getAllPerms(const PMTree& tree) {
     if (!tree.getRoot()) {
         return result;
     }
-    
+
     std::vector<char> current;
     collectPermutations(tree.getRoot(), current, result);
     return result;
@@ -85,19 +85,19 @@ std::vector<char> getPerm2(const PMTree& tree, int num) {
     if (num <= 0 || static_cast<size_t>(num) > tree.getPermutationsCount()) {
         return {};
     }
-    
+
     std::vector<char> result;
     auto current = tree.getRoot();
     num--;
-    
+
     std::vector<int> indices;
     size_t n = current->children.size();
     size_t divisor = 1;
-    
+
     for (size_t i = 1; i <= n; ++i) {
         divisor *= i;
     }
-    
+
     size_t remaining = num;
     for (size_t i = n; i >= 1; --i) {
         divisor /= i;
@@ -105,15 +105,16 @@ std::vector<char> getPerm2(const PMTree& tree, int num) {
         indices.push_back(index);
         remaining %= divisor;
     }
-    
+
     current = tree.getRoot();
     for (int index : indices) {
-        if (index < 0 || static_cast<size_t>(index) >= current->children.size()) {
+        if (index < 0 || static_cast<size_t>(index) >= 
+            current->children.size()) {
             return {};
         }
         current = current->children[index];
         result.push_back(current->value);
     }
-    
+
     return result;
 }
