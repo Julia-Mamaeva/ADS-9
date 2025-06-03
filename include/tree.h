@@ -5,30 +5,30 @@
 #include <vector>
 #include <memory>
 
-class JKL_Tree {
+class PMTree {
  public:
-    JKL_Tree(const std::vector<char>& xyz_elem);
+    explicit PMTree(const std::vector<char>& elements);
     
-    struct MNO_Node {
-        char x_val;
-        std::vector<std::shared_ptr<MNO_Node>> x_children;
+    struct Node {
+        char value;
+        std::vector<std::shared_ptr<Node>> children;
         
-        MNO_Node(char y_val) : x_val(y_val) {}
+        explicit Node(char val) : value(val) {}
     };
     
-    std::shared_ptr<MNO_Node> gRoot() const { return p_root; }
-    size_t gPermCount() const { return t_perm; }
+    std::shared_ptr<Node> getRoot() const { return root_; }
+    size_t getPermutationsCount() const { return total_permutations_; }
 
  private:
-    std::shared_ptr<MNO_Node> p_root;
-    size_t t_perm;
+    std::shared_ptr<Node> root_;
+    size_t total_permutations_;
     
-    void bTree(std::shared_ptr<MNO_Node> prnt, 
-              const std::vector<char>& remElem);
+    void buildTree(std::shared_ptr<Node> parent,
+                 const std::vector<char>& remaining_elements);
 };
 
-std::vector<std::vector<char>> gAllPerm(const JKL_Tree& tr);
-std::vector<char> gPermFrst(const JKL_Tree& tr, int nm);
-std::vector<char> gPermScnd(const JKL_Tree& tr, int nm);
+std::vector<std::vector<char>> getAllPerms(const PMTree& tree);
+std::vector<char> getPerm1(const PMTree& tree, int num);
+std::vector<char> getPerm2(const PMTree& tree, int num);
 
 #endif  // INCLUDE_TREE_H_
