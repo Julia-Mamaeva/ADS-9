@@ -1,120 +1,119 @@
 // Copyright 2022 NNTU-CS
-#include <iostream>
-#include <fstream>
-#include <locale>
-#include <cstdlib>
 #include "tree.h"
+#include <vector>
+#include <memory>
+#include <algorithm>
 
-JKL_Tree::JKL_Tree(const std::vector<char>& xyz_elem) {
-    if (xyz_elem.empty()) {
-        p_root = nullptr;
-        t_perm = 0;
+PMTree::PMTree(const std::vector<char>& elements) {
+    if (elements.empty()) {
+        root_ = nullptr;
+        total_permutations_ = 0;
         return;
-    } 
-    
-    p_root = std::make_shared<MNO_Node>('\0');
-    t_perm = 1;
-    
-    for (size_t i = 1; i <= xyz_elem.size(); ++i) {
-        t_perm *= i;
     }
     
-    bTree(p_root, xyz_elem);
+    root_ = std::make_shared<Node>('\0');
+    total_permutations_ = 1;
+    
+    for (size_t i = 1; i <= elements.size(); ++i) {
+        total_permutations_ *= i;
+    }
+    
+    buildTree(root_, elements);
 }
 
-void JKL_Tree::bTree(std::shared_ptr<MNO_Node> prnt,
-                    const std::vector<char>& remElem) {
-    if (remElem.empty()) {
+void PMTree::buildTree(std::shared_ptr<Node> parent,
+                      const std::vector<char>& remaining_elements) {
+    if (remaining_elements.empty()) {
         return;
     }
     
-    for (char el : remElem) {
-        auto chld = std::make_shared<MNO_Node>(el);
-        prnt->x_children.push_back(chld);
+    for (char elem : remaining_elements) {
+        auto child = std::make_shared<Node>(elem);
+        parent->children.push_back(child);
         
-        std::vector<char> newRem;
-        for (char e : remElem) {
-            if (e != el) {
-                newRem.push_back(e);
+        std::vector<char> new_remaining;
+        for (char e : remaining_elements) {
+            if (e != elem) {
+                new_remaining.push_back(e);
             }
         }
         
-        bTree(chld, newRem);
+        buildTree(child, new_remaining);
     }
 }
 
-void cPerm(std::shared_ptr<JKL_Tree::MNO_Node> nd, 
-          std::vector<char>& curr, 
-          std::vector<std::vector<char>>& res) {
-    if (nd->x_val != '\0') {
-        curr.push_back(nd->x_val);
+void collectPermutations(std::shared_ptr<PMTree::Node> node,
+                        std::vector<char>& current,
+                        std::vector<std::vector<char>>& result) {
+    if (node->value != '\0') {
+        current.push_back(node->value);
     }
     
-    if (nd->x_children.empty()) {
-        res.push_back(curr);
+    if (node->children.empty()) {
+        result.push_back(current);
     } else {
-        for (const auto& ch : nd->x_children) {
-            cPerm(ch, curr, res);
+        for (const auto& child : node->children) {
+            collectPermutations(child, current, result);
         }
     }
     
-    if (nd->x_val != '\0') {
-        curr.pop_back();
+    if (node->value != '\0') {
+        current.pop_back();
     }
 }
 
-std::vector<std::vector<char>> gAllPerm(const JKL_Tree& tr) {
-    std::vector<std::vector<char>> res;
-    if (!tr.gRoot()) {
-        return res;
+std::vector<std::vector<char>> getAllPerms(const PMTree& tree) {
+    std::vector<std::vector<char>> result;
+    if (!tree.getRoot()) {
+        return result;
     }
     
-    std::vector<char> curr;
-    cPerm(tr.gRoot(), curr, res);
-    return res;
+    std::vector<char> current;
+    collectPermutations(tree.getRoot(), current, result);
+    return result;
 }
 
-std::vector<char> gPermFrst(const JKL_Tree& tr, int nm) {
-    auto allP = gAllPerm(tr);
-    if (nm <= 0 || static_cast<size_t>(nm) > allP.size()) {
+std::vector<char> getPerm1(const PMTree& tree, int num) {
+    auto all_perms = getAllPerms(tree);
+    if (num <= 0 || static_cast<size_t>(num) > all_perms.size()) {
         return {};
     }
-    return allP[nm - 1];
+    return all_perms[num - 1];
 }
 
-std::vector<char> gPermScnd(const JKL_Tree& tr, int nm) {
-    if (nm <= 0 || static_cast<size_t>(nm) > tr.gPermCount()) {
+std::vector<char> getPerm2(const PMTree& tree, int num) {
+    if (num <= 0 || static_cast<size_t>(num) > tree.getPermutationsCount()) {
         return {};
     }
     
-    std::vector<char> res;
-    auto curr = tr.gRoot();
-    nm--;
+    std::vector<char> result;
+    auto current = tree.getRoot();
+    num--;
     
-    std::vector<int> idx;
-    size_t n = curr->x_children.size();
-    size_t div = 1;
+    std::vector<int> indices;
+    size_t n = current->children.size();
+    size_t divisor = 1;
     
     for (size_t i = 1; i <= n; ++i) {
-        div *= i;
+        divisor *= i;
     }
     
-    size_t rem = nm;
+    size_t remaining = num;
     for (size_t i = n; i >= 1; --i) {
-        div /= i;
-        size_t id = rem / div;
-        idx.push_back(id);
-        rem %= div;
+        divisor /= i;
+        size_t index = remaining / divisor;
+        indices.push_back(index);
+        remaining %= divisor;
     }
     
-    curr = tr.gRoot();
-    for (int id : idx) {
-        if (id < 0 || static_cast<size_t>(id) >= curr->x_children.size()) {
+    current = tree.getRoot();
+    for (int index : indices) {
+        if (index < 0 || static_cast<size_t>(index) >= current->children.size()) {
             return {};
         }
-        curr = curr->x_children[id];
-        res.push_back(curr->x_val);
+        current = current->children[index];
+        result.push_back(current->value);
     }
     
-    return res;
+    return result;
 }
