@@ -41,25 +41,25 @@ void runExperiment() {
         auto start = std::chrono::high_resolution_clock::now();
         getAllPerms(tree);
         auto end = std::chrono::high_resolution_clock::now();
-        double all_perms_time = 
+        double all_perms_time =
             std::chrono::duration<double>(end - start).count();
 
         start = std::chrono::high_resolution_clock::now();
         getPerm1(tree, test_num);
         end = std::chrono::high_resolution_clock::now();
-        double get_perm1_time = 
+        double get_perm1_time =
             std::chrono::duration<double>(end - start).count();
 
         start = std::chrono::high_resolution_clock::now();
         getPerm2(tree, test_num);
         end = std::chrono::high_resolution_clock::now();
-        double get_perm2_time = 
+        double get_perm2_time =
             std::chrono::duration<double>(end - start).count();
 
-        data_file << n << "," << all_perms_time << "," 
+        data_file << n << "," << all_perms_time << ","
                  << get_perm1_time << "," << get_perm2_time << "\n";
-        std::cout << "n=" << n << " completed. Times: " 
-                 << all_perms_time << "s, " << get_perm1_time 
+        std::cout << "n=" << n << " completed. Times: "
+                 << all_perms_time << "s, " << get_perm1_time
                  << "s, " << get_perm2_time << "s\n";
     }
     data_file.close();
