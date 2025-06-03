@@ -11,11 +11,11 @@
 void printPermutations(const std::vector<char>& elements) {
     PMTree tree(elements);
     auto perms = getAllPerms(tree);
-    
+
     std::cout << "All permutations for [";
     for (char c : elements) std::cout << c << " ";
     std::cout << "] (" << perms.size() << " total):\n";
-    
+
     for (const auto& perm : perms) {
         for (char c : perm) std::cout << c;
         std::cout << " ";
@@ -41,22 +41,26 @@ void runExperiment() {
         auto start = std::chrono::high_resolution_clock::now();
         getAllPerms(tree);
         auto end = std::chrono::high_resolution_clock::now();
-        double all_perms_time = std::chrono::duration<double>(end - start).count();
+        double all_perms_time = 
+            std::chrono::duration<double>(end - start).count();
 
         start = std::chrono::high_resolution_clock::now();
         getPerm1(tree, test_num);
         end = std::chrono::high_resolution_clock::now();
-        double get_perm1_time = std::chrono::duration<double>(end - start).count();
+        double get_perm1_time = 
+            std::chrono::duration<double>(end - start).count();
 
         start = std::chrono::high_resolution_clock::now();
         getPerm2(tree, test_num);
         end = std::chrono::high_resolution_clock::now();
-        double get_perm2_time = std::chrono::duration<double>(end - start).count();
+        double get_perm2_time = 
+            std::chrono::duration<double>(end - start).count();
 
-        data_file << n << "," << all_perms_time << "," << get_perm1_time 
-                 << "," << get_perm2_time << "\n";
-        std::cout << "n=" << n << " completed. Times: " << all_perms_time << "s, " 
-                 << get_perm1_time << "s, " << get_perm2_time << "s\n";
+        data_file << n << "," << all_perms_time << "," 
+                 << get_perm1_time << "," << get_perm2_time << "\n";
+        std::cout << "n=" << n << " completed. Times: " 
+                 << all_perms_time << "s, " << get_perm1_time 
+                 << "s, " << get_perm2_time << "s\n";
     }
     data_file.close();
     std::cout << "Experiment data saved to experiment_data.csv\n";
