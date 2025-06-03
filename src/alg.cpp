@@ -108,7 +108,7 @@ std::vector<char> getPerm2(const PMTree& tree, int num) {
 
     current = tree.getRoot();
     for (int index : indices) {
-        if (index < 0 || static_cast<size_t>(index) >= 
+        if (index < 0 || static_cast<size_t>(index) >=
             current->children.size()) {
             return {};
         }
